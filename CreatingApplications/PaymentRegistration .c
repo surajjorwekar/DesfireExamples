@@ -198,7 +198,7 @@ int main(int argc, char *argv[])
 
         //--------------- CREATE APPLICATION -----------------
         //mifare_desfire_create_application_aes (FreefareTag tag, MifareDESFireAID aid, uint8_t settings, uint8_t key_no);
-        MifareDESFireAID aid_a = mifare_desfire_aid_new(Aadhar);
+        MifareDESFireAID aid_a = mifare_desfire_aid_new(Payment);
         mifare_desfire_create_application_aes (tags[i] , aid_a, settings, 1);
 
 
@@ -231,7 +231,7 @@ int main(int argc, char *argv[])
     nfc_close (device);
     }
     nfc_exit (context);
-    fclose(fp);
+    fclose(fopen("data.txt", "w"));
     exit (error);
     
     

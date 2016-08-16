@@ -232,7 +232,8 @@ int main(int argc, char *argv[])
     nfc_close (device);
     }
     nfc_exit (context);
-    fclose(fp);
+    fclose(fopen("data.txt", "w"));
+
     exit (error);
     
     

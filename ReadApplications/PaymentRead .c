@@ -21,6 +21,8 @@
 #include <string.h>
 #include <stdint.h>
 #include <nfc/nfc.h>
+ #include <unistd.h>
+
 
 #include <freefare.h>
 #define Aadhar      0x00CE16
@@ -38,7 +40,7 @@ int main(int argc, char *argv[])
     size_t len = 0;
     ssize_t read;
 
-    fp = fopen("data.txt", "r");
+    fp = fopen("data.txt", "w");
     if (fp == NULL)
         exit(EXIT_FAILURE);
 
@@ -195,17 +197,44 @@ int main(int argc, char *argv[])
 
 
 
-        //--------------- CREATE APPLICATION -----------------
+        /*//--------------- CREATE APPLICATION -----------------
         //mifare_desfire_create_application_aes (FreefareTag tag, MifareDESFireAID aid, uint8_t settings, uint8_t key_no);
-        MifareDESFireAID aid_a = mifare_desfire_aid_new(Hospital);
-        mifare_desfire_create_application_aes (tags[i] , aid_a, settings, 1);
+        MifareDESFireAID aid_a = mifare_desfire_aid_new(Aadhar);
+        mifare_desfire_create_application_aes (tags[i] , aid_a, settings, 1);*/
 
 
 
-        int FileId = 1;
+        uint8_t *files;
+        size_t file_count;
         
-        mifare_desfire_select_application(tags[i], aid_a);
-        while ((read = getline(&line, &len, fp)) != -1) 
+        int FileId = 1;
+
+        MifareDESFireAID aid = mifare_desfire_aid_new(Payment);
+       
+        if(mifare_desfire_select_application(tags[i], aid))
+        {
+            printf("*");
+        }
+
+        else
+        {
+            res = mifare_desfire_get_file_ids (tags[i], &files, &file_count);
+
+        
+            while(file_count--)
+            {
+                uint8_t buffer[120] = {0};
+                res = mifare_desfire_read_data (tags[i], FileId, 0, 0, &buffer);
+                FileId++;
+                printf("%s", buffer);
+                //sleep(2);
+            }
+        
+        }
+        
+        
+
+        /*while ((read = getline(&line, &len, fp)) != -1) 
         {
             
             //printf("%s", line);
@@ -219,7 +248,7 @@ int main(int argc, char *argv[])
             FileId++;
         }
 
-        printf("Created Application Successfully");
+        printf("Created Application Successfully");*/
 
         free (tag_uid);
 
@@ -231,6 +260,7 @@ int main(int argc, char *argv[])
     }
     nfc_exit (context);
     fclose(fopen("data.txt", "w"));
+
     exit (error);
     
     
